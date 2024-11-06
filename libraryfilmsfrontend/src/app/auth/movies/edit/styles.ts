@@ -147,6 +147,7 @@ export const Description = styled.div`
     padding-top: .5rem;
     padding-bottom: .5rem;
     text-overflow: ellipsis;
+    text-align: center;
     overflow: hidden;
     width: 100%;
 

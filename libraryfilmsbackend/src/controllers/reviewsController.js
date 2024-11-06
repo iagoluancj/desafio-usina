@@ -3,7 +3,6 @@ const Review = require('../models/reviews.model');
 
 exports.addReview = async (req, res) => { // Realiza criação de uma nova review, utilizei principalmente no cadastro dos filmes, para que o filme seja vinculado ao usuário no momento da criação.
     const { movieId, userId } = req.body;
-    console.log(movieId, userId)
 
     try {
         const { data: existingReview, error: fetchError } = await supabase
@@ -17,8 +16,6 @@ exports.addReview = async (req, res) => { // Realiza criação de uma nova revie
         }
 
         if (existingReview.length > 0) {
-            console.log('filme ja vinculado ao seu usuário')
-            console.log(existingReview)
             return res.status(200).json({ message: "Filme já vinculado ao seu usuário." });
         }
 
@@ -30,7 +27,6 @@ exports.addReview = async (req, res) => { // Realiza criação de uma nova revie
             throw insertError;
         }
 
-        console.log('não existe e foi vinculado')
         return res.status(201).json({ message: "Filme vinculado com sucesso ao seu usuário.", review: newReview });
     } catch (error) {
         console.error("Erro ao vincular filme ao usuário:", error);
@@ -93,10 +89,8 @@ exports.updateReview = async (req, res) => { // Simples rota para atualizar revi
             .select('*');
             
         if (error) throw error;
-        console.log('avaliação atualizada com sucesso')
         res.status(200).json({ message: 'Avaliação atualizada com sucesso.', review: updatedReview[0] });
     } catch (error) {
-        console.log(error)
         res.status(500).json({ error: error.message });
     }
 };

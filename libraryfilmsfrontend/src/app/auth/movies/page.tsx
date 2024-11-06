@@ -13,11 +13,10 @@ import Image from "next/image";
 import Cookies from 'js-cookie';
 import { FaStar } from "react-icons/fa";
 
-import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-
 import { SupaContext } from "@/Context/context";
 import { useRouter } from "next/navigation";
 import NavbarComponent from "@/components/Navbar";
+import MovieCardSkeleton from "@/components/skeleton";
 
 function Movies() {
   const [movies, setMovies] = useState<TypeReview[]>([]);
@@ -28,21 +27,6 @@ function Movies() {
   const { setMovieEdit } = useContext(SupaContext)
 
   const router = useRouter();
-
-  // Buscando e mapeando imagens na força bruta por não ter uma API especifica para fornecer os devidos banners de cada film.
-  // const getImageForMovie = (title: string) => {
-  //   switch (title) {
-  //     case 'Gattaca':
-  //       return Gattaca;
-  //     case 'Watchmen':
-  //       return Watchmen;
-  //     case 'DevilMan':
-  //       return DevilMan;
-  //     default:
-  //       return DefaultImage;
-  //   }
-  // };
-
 
   const fetchMovies = async () => { //simples fetch para buscar os filmes.
     try {
@@ -106,7 +90,7 @@ function Movies() {
         ((title && title.toLowerCase().includes(lowerCaseSearch)) ||
           (genre && genre.toLowerCase().includes(lowerCaseSearch)) ||
           (release_year && release_year.toString().includes(lowerCaseSearch)) ||
-          (description && description.toLowerCase().includes(lowerCaseSearch)))
+          (description && description.toLowerCase().includes(lowerCaseSearch))) 
       );
     });
   };
@@ -171,38 +155,26 @@ function Movies() {
                       .map((movie) => (
                         <MovieContainer key={movie.id}>
                           <MovieCard onClick={() => handleEditMovie(movie)}>
-                            <Image src={movie.movies.image || ''} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100}/>
+                            <Image src={movie.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
                           </MovieCard>
                         </MovieContainer>
                       ))
                   ) : (
                     // skeleton de item vázio ou não presente nos resultados de busca.
-                    Array.from({ length: 7 }).map((_, index) => (
-                      <MovieCard key={index} className="skeleton-card">
-                        <SkeletonTheme baseColor="#202020" highlightColor="#444">
-                          <Skeleton height={180} width={120} />
-                          <Rating>
-                            <Skeleton width={40} height={20} />
-                            <FaStar color="#FFD700" />
-                          </Rating>
-                        </SkeletonTheme>
-                      </MovieCard>
-                    ))
+                    <>
+                      {Array.from({ length: 7 }).map((_, index) => (
+                        <MovieCardSkeleton key={index} message="" />
+                      ))}
+                    </>
                   );
                 })()
               ) : (
                 // skeleton de carregamento
-                Array.from({ length: 7 }).map((_, index) => (
-                  <MovieCard key={index} className="skeleton-card">
-                    <SkeletonTheme baseColor="#202020" highlightColor="#444">
-                      <Skeleton height={180} width={120} />
-                      <Rating>
-                        <Skeleton width={40} height={20} />
-                        <FaStar color="#FFD700" />
-                      </Rating>
-                    </SkeletonTheme>
-                  </MovieCard>
-                ))
+                <>
+                  {Array.from({ length: 7 }).map((_, index) => (
+                    <MovieCardSkeleton key={index} message="" />
+                  ))}
+                </>
               )}
             </div>
           </div>
@@ -212,44 +184,31 @@ function Movies() {
               {loading ? (
                 (() => {
                   const filteredMovies = filterRatedMovies(movies, searchTerm);
-
                   return filteredMovies.length > 0 ? (
                     filteredMovies
                       .filter((movie) => movie.rating !== null && movie.rating >= 1 && movie.rating <= 5)
                       .map((movie) => (
                         <MovieCard key={movie.id} onClick={() => handleEditMovie(movie)}>
-                          <Image src={movie.movies.image || ''} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100}/>
+                          <Image src={movie.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
                           <Rating>
                             {movie.rating} <FaStar color="#FFD700" />
                           </Rating>
                         </MovieCard>
                       ))
                   ) : (
-                    Array.from({ length: 7 }).map((_, index) => (
-                      <MovieCard key={index} className="skeleton-card">
-                        <SkeletonTheme baseColor="#202020" highlightColor="#444">
-                          <Skeleton height={180} width={120} />
-                          <Rating>
-                            <Skeleton width={40} height={20} />
-                            <FaStar color="#FFD700" />
-                          </Rating>
-                        </SkeletonTheme>
-                      </MovieCard>
-                    ))
+                    <>
+                      {Array.from({ length: 7 }).map((_, index) => (
+                        <MovieCardSkeleton key={index} message="N/A" />
+                      ))}
+                    </>
                   )
                 })()
               ) : (
-                Array.from({ length: 7 }).map((_, index) => (
-                  <MovieCard key={index} className="skeleton-card">
-                    <SkeletonTheme baseColor="#202020" highlightColor="#444">
-                      <Skeleton height={180} width={120} />
-                      <Rating>
-                        <Skeleton width={40} height={20} />
-                        <FaStar color="#FFD700" />
-                      </Rating>
-                    </SkeletonTheme>
-                  </MovieCard>
-                ))
+                <>
+                  {Array.from({ length: 7 }).map((_, index) => (
+                    <MovieCardSkeleton key={index} message="N/A" />
+                  ))}
+                </>
               )}
             </div>
           </div>
@@ -260,41 +219,30 @@ function Movies() {
                 (() => {
                   const filteredMovies = filterPendingMovies(movies, searchTerm);
                   return filteredMovies.length > 0 ? (
-                    filteredMovies.filter((movie) => movie.rating === null || movie.rating === 0)
+                    filteredMovies
+                      .filter((movie) => movie.rating === null || movie.rating === 0)
                       .map((movie: any) => (
                         <MovieCard key={movie.id} onClick={() => handleEditMovie(movie)}>
-                          <Image src={movie.movies.image || ''} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100}/>
+                          <Image src={movie.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
                           <Rating>
                             N/A <FaStar color="#FFD700" />
                           </Rating>
                         </MovieCard>
                       ))
                   ) : (
-                    Array.from({ length: 7 }).map((_, index) => (
-                      <MovieCard key={index} className="skeleton-card">
-                        <SkeletonTheme baseColor="#202020" highlightColor="#444">
-                          <Skeleton height={180} width={120} />
-                          <Rating>
-                            <Skeleton width={40} height={20} />
-                            N/A <FaStar color="#FFD700" />
-                          </Rating>
-                        </SkeletonTheme>
-                      </MovieCard>
-                    ))
+                    <>
+                      {Array.from({ length: 7 }).map((_, index) => (
+                        <MovieCardSkeleton key={index} message="N/A" />
+                      ))}
+                    </>
                   )
                 })()
               ) : (
-                Array.from({ length: 7 }).map((_, index) => (
-                  <MovieCard key={index} className="skeleton-card">
-                    <SkeletonTheme baseColor="#202020" highlightColor="#444">
-                      <Skeleton height={180} width={120} />
-                      <Rating>
-                        <Skeleton width={40} height={20} />
-                        N/A <FaStar color="#FFD700" />
-                      </Rating>
-                    </SkeletonTheme>
-                  </MovieCard>
-                ))
+                <>
+                  {Array.from({ length: 7 }).map((_, index) => (
+                    <MovieCardSkeleton key={index} message="N/A" />
+                  ))}
+                </>
               )}
             </div>
           </div>

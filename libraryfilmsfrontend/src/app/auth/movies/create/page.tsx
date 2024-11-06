@@ -181,7 +181,7 @@ function Movies() {
                         </DurationInputWrapper>
                     </FormContainer>
                     <InputComponent
-                        label="Banner do filme: (link)"
+                        label="Link banner do filme: "
                         name="image"
                         maxLength={1000}
                         value={formData.image}

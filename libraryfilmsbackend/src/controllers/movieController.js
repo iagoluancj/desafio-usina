@@ -153,14 +153,12 @@ exports.updateMovie = async (req, res) => { // Atualiza o filme existente.
     const { title, description, genre, release_year, duration, image } = req.body;
 
     const updatedMovie = new Movie({ title, description, genre, release_year, duration, image });
-    console.log(description)
 
     try {
         const { data, error } = await supabase.from('movies').update(updatedMovie).eq('id', id);
         if (error) throw error;
         res.status(200).json(data);
     } catch (error) {
-        console.log(error)
         res.status(500).json({ error: error.message });
     }
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import userAuth from "@/utils/userAuth";
@@ -28,7 +29,7 @@ function MovieEdit() {
 
     let inactivityTimeout: NodeJS.Timeout;
 
-    const updateRating = async (newValue: number) => { // Fetch para atualziação do rating. 
+    const updateRating = async (newValue: number) => { // Fetch para atualziação do rating.
         if (!movieEdit?.id) return;
         const userCookie = Cookies.get('user');
 
@@ -40,7 +41,6 @@ function MovieEdit() {
             });
             if (response.ok) {
             } else {
-                toast.error("Erro ao atualizar a avaliação.");
             }
         } catch (error) {
             toast.error("Erro ao atualizar a avaliação.");
@@ -48,27 +48,27 @@ function MovieEdit() {
         }
     };
 
-    const updateDescription = async () => { // Edita a descrição do filme em relação a opnião do usuário. Nada de muito complicado por aqui. 
-        if (!movieEdit?.id) return;
-        const userCookie = Cookies.get('user');
+    // const updateDescription = async () => { // Edita a descrição do filme em relação a opnião do usuário. Nada de muito complicado por aqui.
+    //     if (!movieEdit?.id) return;
+    //     const userCookie = Cookies.get('user');
 
-        try {
-            const response = await fetch(`http://localhost:3001/movies/${movieEdit.movie_id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ description, user_id: userCookie }),
-            });
-            if (response.ok) {
-                toast.success("Descrição atualizada com sucesso!");
-                setIsEditingDescription(false);
-            } else {
-                toast.error("Erro ao atualizar a descrição.");
-            }
-        } catch (error) {
-            toast.error("Erro ao atualizar a descrição.");
-            console.error("Erro ao atualizar descrição:", error);
-        }
-    };
+    //     try {
+    //         const response = await fetch(`http://localhost:3001/movies/${movieEdit.movie_id}`, {
+    //             method: "PUT",
+    //             headers: { "Content-Type": "application/json" },
+    //             body: JSON.stringify({ description, user_id: userCookie }),
+    //         });
+    //         if (response.ok) {
+    //             toast.success("Descrição atualizada com sucesso!");
+    //             setIsEditingDescription(false);
+    //         } else {
+    //             toast.error("Erro ao atualizar a descrição.");
+    //         }
+    //     } catch (error) {
+    //         toast.error("Erro ao atualizar a descrição.");
+    //         console.error("Erro ao atualizar descrição:", error);
+    //     }
+    // };
 
     function formatDuration(minutes: number): string { // Formata duração de minutos para horas.
         const hours = Math.floor(minutes / 60);
@@ -95,8 +95,6 @@ function MovieEdit() {
             router.push("/auth/movies");
         }
 
-        console.log(movieEdit)
-
         return () => clearTimeout(inactivityTimeout);
     }, [movieEdit]);
 
@@ -105,7 +103,7 @@ function MovieEdit() {
             <NavbarComponent message={`Página de edição`} />
             <MoviesEdit>
                 <HeaderImageEdit>
-                    <Image src={DevilMan} alt='Astronauta no cinema' />
+                    <Image src={movieEdit?.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt='Astronauta no cinema' width={100} height={100} />
                     <TopImage>
                         <button onClick={toBack}><IoArrowBackCircleOutline size={30} /></button>
                         <span></span>
@@ -132,19 +130,12 @@ function MovieEdit() {
                             <div>{ratingValue || 0}</div>
                         </RatingContainer>
                     </Stack>
-                    {isEditingDescription ? (
-                        <Description>
-                            <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                            />
-                        </Description>
-                    ) : (
-                        <Description onClick={() => setIsEditingDescription(true)}>
-                            {description || "Clique para adicionar uma descrição."}
-                        </Description>
-                    )}
-                    {isEditingDescription ? (
+
+                    <Description onClick={() => setIsEditingDescription(true)}>
+                        {description || "Clique para adicionar uma descrição."}
+                    </Description>
+
+                    {/* {isEditingDescription ? (
                         <DescriptionAction>
                             <Button onClick={updateDescription}>Salvar</Button>
                             <ButtonCancelled onClick={() => setIsEditingDescription(false)}>Cancelar</ButtonCancelled>
@@ -152,8 +143,8 @@ function MovieEdit() {
                     ) : (
                         <DescriptionActionClicked>Clique no texto para editar.</DescriptionActionClicked>
                     )
-                    }
-                    <EditIcon ><BiEdit size={14} /></EditIcon>
+                    } */}
+                    {/* <EditIcon ><BiEdit size={14} /></EditIcon> */}
                 </Avaliation>
                 <Line />
                 <MoreItensIdea>

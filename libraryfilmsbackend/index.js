@@ -24,7 +24,6 @@ function gerarToken(userId) { //Configuração do JWT junto ao seu tempo de expi
 
 app.post('/register', async (req, res) => { //Sem muita compliação, realiza o registro. 
     const { name, email, password } = req.body;
-    console.log(name, email, password)
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10); // utlizando bcrypt para encriptar. 
