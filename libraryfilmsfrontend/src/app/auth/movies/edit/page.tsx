@@ -4,7 +4,7 @@
 import userAuth from "@/utils/userAuth";
 import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { ActorCard, ActorName, ActorPhoto, Avaliation, BottomImage, Button, ButtonCancelled, Comment, Description, DescriptionAction, DescriptionActionClicked, EditIcon, HeaderImageEdit, Line, MoreItensIdea, MoviesEdit, RatingContainer, TopImage } from "./styles";
+import { ActorCard, ActorName, ActorPhoto, Avaliation, BottomImage, Button, ButtonAddFilmToList, ButtonCancelled, Comment, Description, DescriptionAction, DescriptionActionClicked, EditIcon, HeaderImageEdit, Line, MoreItensIdea, MoviesEdit, RatingContainer, TopImage } from "./styles";
 import { SupaContext } from "@/Context/context";
 import { useRouter } from "next/navigation";
 import NavbarComponent from "@/components/Navbar";
@@ -21,9 +21,10 @@ import { IoArrowBackCircleOutline } from "react-icons/io5";
 import { BiEdit } from "react-icons/bi";
 
 function MovieEdit() {
-    const { movieEdit } = useContext(SupaContext)
+    const { movieEdit, setIsRecommended, isRecommended } = useContext(SupaContext)
     const [ratingValue, setRatingValue] = useState(movieEdit?.rating);
     const [comment, setComment] = useState(movieEdit?.comment || "");
+    const [isLoading, setIsLoading] = useState(false); // Loading utilizado para evitar vários clicks no submit. 
     const [isEditingCommment, setIsEditingComment] = useState(false);
     const router = useRouter();
 
@@ -70,6 +71,39 @@ function MovieEdit() {
         }
     };
 
+    const addFilmToList = async () => {
+        const userCookie = Cookies.get('user'); 
+
+        if (!userCookie || !movieEdit?.movies?.id) {
+            toast.error("Erro: usuário ou filme não encontrado.");
+            return;
+        }
+
+        setIsLoading(true); 
+
+        try {
+            const response = await fetch(`http://localhost:3001/reviews`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    movieId: movieEdit.movies.id, 
+                    userId: userCookie,
+                }),
+            });
+
+            if (response.ok) {
+                toast.success("Filme adicionado à lista com sucesso!");
+            } else {
+                toast.error("Erro ao adicionar o filme à lista.");
+            }
+        } catch (error) {
+            toast.error("Erro ao adicionar o filme à lista.");
+            console.error("Erro ao adicionar filme:", error);
+        } finally {
+            setIsLoading(false); 
+        }
+    };
+
     function formatDuration(minutes: number): string { // Formata duração de minutos para horas.
         const hours = Math.floor(minutes / 60);
         const remainingMinutes = minutes % 60;
@@ -77,6 +111,7 @@ function MovieEdit() {
     }
 
     const toBack = () => {
+        setIsRecommended(false)
         router.push("/auth/movies");
     };
 
@@ -100,6 +135,7 @@ function MovieEdit() {
 
     useEffect(() => {
         if (movieEdit?.id === undefined) { //Para melhor resposta visual do usuário, retorna para tela de movies caso o movieEdit tenha seu valor perdido ao atualizar ou trocar de página.
+            setIsRecommended(false)
             router.push("/auth/movies");
         }
 
@@ -134,13 +170,23 @@ function MovieEdit() {
                 <Avaliation>
                     <Stack spacing={1}>
                         <RatingContainer>
-                            <Rating
-                                name="half-rating"
-                                value={ratingValue}
-                                color="#fff"
-                                precision={0.5}
-                                onChange={handleRatingChange}
-                            />
+                            {isRecommended ?
+                                <Rating
+                                    name="half-rating"
+                                    value={ratingValue}
+                                    color="#fff"
+                                    precision={0.5}
+                                    disabled={true}
+                                />
+                                :
+                                <Rating
+                                    name="half-rating"
+                                    value={ratingValue}
+                                    color="#fff"
+                                    precision={0.5}
+                                    onChange={handleRatingChange}
+                                />
+                            }
                             <div>{ratingValue || 0}</div>
                         </RatingContainer>
                     </Stack>
@@ -150,32 +196,38 @@ function MovieEdit() {
                     </Description>
 
                 </Avaliation>
-                <Comment>
-                    <EditIcon ><BiEdit size={14} /></EditIcon>
-                    {!isEditingCommment ?
-                        <Description onClick={() => setIsEditingComment(true)}>
-                            {comment || "Vamos, comente, nós diga oque você achou."}
-                        </Description>
-                        :
-                        <textarea
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            rows={4}
-                            style={{ width: "100%", padding: "8px", resize: "vertical" }}
-                        />
-                    }
-                    {isEditingCommment ? (
-                        <DescriptionAction>
-                            <div>
-                                <Button onClick={updateComment}>Salvar</Button>
-                                <ButtonCancelled onClick={() => setIsEditingComment(false)}>Cancelar</ButtonCancelled>
-                            </div>
-                        </DescriptionAction>
-                    ) : (
-                        <DescriptionActionClicked onClick={() => setIsEditingComment(true)}>Clique para inserir um comentário.</DescriptionActionClicked>
-                    )
-                    }
-                </Comment>
+                {!isRecommended ?
+                    <Comment>
+                        <EditIcon ><BiEdit size={14} /></EditIcon>
+                        {!isEditingCommment ?
+                            <Description onClick={() => setIsEditingComment(true)}>
+                                {comment || "Vamos, comente, nós diga oque você achou."}
+                            </Description>
+                            :
+                            <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                rows={4}
+                                style={{ width: "100%", padding: "8px", resize: "vertical" }}
+                            />
+                        }
+                        {isEditingCommment ? (
+                            <DescriptionAction>
+                                <div>
+                                    <Button onClick={updateComment}>Salvar</Button>
+                                    <ButtonCancelled onClick={() => setIsEditingComment(false)}>Cancelar</ButtonCancelled>
+                                </div>
+                            </DescriptionAction>
+                        ) : (
+                            <DescriptionActionClicked onClick={() => setIsEditingComment(true)}>Clique para inserir um comentário.</DescriptionActionClicked>
+                        )
+                        }
+                    </Comment>
+                    :
+                    <ButtonAddFilmToList disabled={isLoading} onClick={addFilmToList}>
+                        {isLoading ? "Adicionando..." : "Adicionar filme a lista"}
+                    </ButtonAddFilmToList>
+                }
                 <Line />
                 <MoreItensIdea>
                     {[0, 1, 2, 3].map((actorIndex) => (

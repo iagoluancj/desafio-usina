@@ -2,7 +2,7 @@
 
 import { supabase } from "@/services/supabase";
 import { TypeMovies, TypeReview, TypeUsers } from "@/Types/types";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
 
 type SupaProviderProps = {
     children: ReactNode;
@@ -10,21 +10,26 @@ type SupaProviderProps = {
 
 type SupaContextType = {
     contextUsers: TypeUsers[];
+    isRecommended: boolean;
     contextMovies: TypeMovies[];
     movieEdit: TypeReview | null; 
+    setIsRecommended: Dispatch<SetStateAction<boolean>>;
     setMovieEdit: (movie: TypeReview | null) => void;
 };
 
 export const SupaContext = createContext<SupaContextType>({
     contextUsers: [],
     contextMovies: [],
+    isRecommended: false,
     movieEdit: null,
+    setIsRecommended: () => {},
     setMovieEdit: () => {},
 });
 
 // Context em menor escala, apenas para tratar algumas situações em que se sai melhor do que ao utilizar props.
 const SupaProvider: React.FC<SupaProviderProps> = ({ children }) => {
     const [users, setUsers] = useState<TypeUsers[]>([]);
+    const [isRecommended, setIsRecommended] = useState(false)
     const [movies, setMovies] = useState<TypeMovies[]>([]);
     const [movieEdit, setMovieEdit] = useState<TypeReview | null>(null);
 
@@ -105,6 +110,8 @@ const SupaProvider: React.FC<SupaProviderProps> = ({ children }) => {
                 contextUsers: users,
                 contextMovies: movies,
                 movieEdit, 
+                isRecommended,
+                setIsRecommended,
                 setMovieEdit
             }}
         >

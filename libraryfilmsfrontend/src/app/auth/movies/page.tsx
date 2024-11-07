@@ -24,7 +24,7 @@ function Movies() {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("");
-  const { setMovieEdit } = useContext(SupaContext)
+  const { setMovieEdit, setIsRecommended } = useContext(SupaContext)
 
   const router = useRouter();
 
@@ -104,6 +104,12 @@ function Movies() {
     router.push("/auth/movies/edit");
   };
 
+  const handleEditMovieRecommended = (movie: TypeReview) => {
+    setMovieEdit(movie);
+    setIsRecommended(true)
+    router.push("/auth/movies/edit");
+  };
+
   const createNewMovie = () => {
     router.push('/auth/movies/create');
   }
@@ -162,7 +168,7 @@ function Movies() {
                       })
                       .map((movie) => (
                         <MovieContainer key={movie.id}>
-                          <MovieCard onClick={() => handleEditMovie(movie)}>
+                          <MovieCard onClick={() => handleEditMovieRecommended(movie)}>
                             <Image src={
                               movie.movies.image && isValidUrl(movie.movies.image)
                                 ? movie.movies.image
