@@ -89,6 +89,7 @@ exports.updateReview = async (req, res) => { // Simples rota para atualizar revi
             .select('*');
             
         if (error) throw error;
+
         res.status(200).json({ message: 'Avaliação atualizada com sucesso.', review: updatedReview[0] });
     } catch (error) {
         res.status(500).json({ error: error.message });

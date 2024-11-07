@@ -118,16 +118,47 @@ export const Avaliation = styled.div`
     color: var(--textoPrimario);
     padding: 0rem 1rem;
     border-radius: 15px;
-    background-color: #f7f7f710;
+    /* background-color: #f7f7f710;
     border-top: 1px solid #52B788;
     border-left: 1px solid #52B788;
-    border-right: 1px solid #52B788;
+    border-right: 1px solid #52B788; */
     width: 70%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
+`;
+
+export const Comment = styled.div`
+    z-index: 2;
+    color: var(--textoPrimario);
+    padding: 0rem 1rem;
+    margin: 0rem 1rem;
+    margin-top: 2rem;
+    border-radius: 15px;
+    background-color: #f7f7f710;
+    border-top: 1px solid #52B788;
+    border-left: 1px solid #52B788;
+    border-right: 1px solid #52B788;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    textarea {
+      margin-top: .5rem;
+      margin-bottom: .5rem;
+      padding: .5rem;
+      width: 100%;
+      height: 100px;
+      border-radius: 10px;
+      font-weight: 300;
+      font-size: 1rem;
+      outline: none;
+      background-color: #f7f7f710;
+    }
 `;
 
 export const RatingContainer = styled.div`  
@@ -162,16 +193,32 @@ export const Description = styled.div`
 
 export const DescriptionAction = styled.div`
     display: flex;
+    flex-direction: column;
     width: 100%;
     justify-content: space-evenly;
     gap: .3rem;
     font-weight: 200;
     padding-bottom: .5rem;
+
+    textarea {
+      padding: .5rem;
+      width: 100%;
+      height: 100px;
+      border-radius: 4px;
+      background-color: #f7f7f710;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
 `;
 
 export const DescriptionActionClicked = styled.div`
     font-weight: 200;
     font-size: 12px;
+    text-align: center;
     font-style: italic;
 `;
 

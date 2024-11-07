@@ -4,7 +4,7 @@
 import userAuth from "@/utils/userAuth";
 import { SyntheticEvent, useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { ActorCard, ActorName, ActorPhoto, Avaliation, BottomImage, Button, ButtonCancelled, Description, DescriptionAction, DescriptionActionClicked, EditIcon, HeaderImageEdit, Line, MoreItensIdea, MoviesEdit, RatingContainer, TopImage } from "./styles";
+import { ActorCard, ActorName, ActorPhoto, Avaliation, BottomImage, Button, ButtonCancelled, Comment, Description, DescriptionAction, DescriptionActionClicked, EditIcon, HeaderImageEdit, Line, MoreItensIdea, MoviesEdit, RatingContainer, TopImage } from "./styles";
 import { SupaContext } from "@/Context/context";
 import { useRouter } from "next/navigation";
 import NavbarComponent from "@/components/Navbar";
@@ -23,8 +23,8 @@ import { BiEdit } from "react-icons/bi";
 function MovieEdit() {
     const { movieEdit } = useContext(SupaContext)
     const [ratingValue, setRatingValue] = useState(movieEdit?.rating);
-    const [description, setDescription] = useState(movieEdit?.movies.description || "");
-    const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const [comment, setComment] = useState(movieEdit?.comment || "");
+    const [isEditingCommment, setIsEditingComment] = useState(false);
     const router = useRouter();
 
     let inactivityTimeout: NodeJS.Timeout;
@@ -48,27 +48,27 @@ function MovieEdit() {
         }
     };
 
-    // const updateDescription = async () => { // Edita a descrição do filme em relação a opnião do usuário. Nada de muito complicado por aqui.
-    //     if (!movieEdit?.id) return;
-    //     const userCookie = Cookies.get('user');
+    const updateComment = async () => { // Edita a descrição do filme em relação a opnião do usuário. Nada de muito complicado por aqui.
+        if (!movieEdit?.id) return;
+        const userCookie = Cookies.get('user');
 
-    //     try {
-    //         const response = await fetch(`http://localhost:3001/movies/${movieEdit.movie_id}`, {
-    //             method: "PUT",
-    //             headers: { "Content-Type": "application/json" },
-    //             body: JSON.stringify({ description, user_id: userCookie }),
-    //         });
-    //         if (response.ok) {
-    //             toast.success("Descrição atualizada com sucesso!");
-    //             setIsEditingDescription(false);
-    //         } else {
-    //             toast.error("Erro ao atualizar a descrição.");
-    //         }
-    //     } catch (error) {
-    //         toast.error("Erro ao atualizar a descrição.");
-    //         console.error("Erro ao atualizar descrição:", error);
-    //     }
-    // };
+        try {
+            const response = await fetch(`http://localhost:3001/reviews/${movieEdit.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ comment, user_id: userCookie }),
+            });
+            if (response.ok) {
+                toast.success("Comentário atualizada com sucesso!");
+                setIsEditingComment(false);
+            } else {
+                toast.error("Erro ao atualizar o comentário.");
+            }
+        } catch (error) {
+            toast.error("Erro ao atualizar o comentário.");
+            console.error("Erro ao atualizar comentário:", error);
+        }
+    };
 
     function formatDuration(minutes: number): string { // Formata duração de minutos para horas.
         const hours = Math.floor(minutes / 60);
@@ -90,6 +90,14 @@ function MovieEdit() {
         }, 1);
     };
 
+    const isValidUrl = (url: string) => { // função criada para verificar se a URL é valida e não quebrar ao passar o valor para o SRC.
+        try {
+            return Boolean(new URL(url));
+        } catch {
+            return false;
+        }
+    };
+
     useEffect(() => {
         if (movieEdit?.id === undefined) { //Para melhor resposta visual do usuário, retorna para tela de movies caso o movieEdit tenha seu valor perdido ao atualizar ou trocar de página.
             router.push("/auth/movies");
@@ -103,7 +111,13 @@ function MovieEdit() {
             <NavbarComponent message={`Página de edição`} />
             <MoviesEdit>
                 <HeaderImageEdit>
-                    <Image src={movieEdit?.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt='Astronauta no cinema' width={100} height={100} />
+                    <Image
+                        src={
+                            movieEdit?.movies?.image && isValidUrl(movieEdit.movies.image)
+                                ? movieEdit.movies.image
+                                : 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'
+                        }
+                        alt='Astronauta no cinema' width={100} height={100} />
                     <TopImage>
                         <button onClick={toBack}><IoArrowBackCircleOutline size={30} /></button>
                         <span></span>
@@ -131,47 +145,47 @@ function MovieEdit() {
                         </RatingContainer>
                     </Stack>
 
-                    <Description onClick={() => setIsEditingDescription(true)}>
-                        {description || "Clique para adicionar uma descrição."}
+                    <Description>
+                        {movieEdit?.movies.description}
                     </Description>
 
-                    {/* {isEditingDescription ? (
+                </Avaliation>
+                <Comment>
+                    <EditIcon ><BiEdit size={14} /></EditIcon>
+                    {!isEditingCommment ?
+                        <Description onClick={() => setIsEditingComment(true)}>
+                            {comment || "Vamos, comente, nós diga oque você achou."}
+                        </Description>
+                        :
+                        <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            rows={4}
+                            style={{ width: "100%", padding: "8px", resize: "vertical" }}
+                        />
+                    }
+                    {isEditingCommment ? (
                         <DescriptionAction>
-                            <Button onClick={updateDescription}>Salvar</Button>
-                            <ButtonCancelled onClick={() => setIsEditingDescription(false)}>Cancelar</ButtonCancelled>
+                            <div>
+                                <Button onClick={updateComment}>Salvar</Button>
+                                <ButtonCancelled onClick={() => setIsEditingComment(false)}>Cancelar</ButtonCancelled>
+                            </div>
                         </DescriptionAction>
                     ) : (
-                        <DescriptionActionClicked>Clique no texto para editar.</DescriptionActionClicked>
+                        <DescriptionActionClicked onClick={() => setIsEditingComment(true)}>Clique para inserir um comentário.</DescriptionActionClicked>
                     )
-                    } */}
-                    {/* <EditIcon ><BiEdit size={14} /></EditIcon> */}
-                </Avaliation>
+                    }
+                </Comment>
                 <Line />
                 <MoreItensIdea>
-                    <ActorCard>
-                        <ActorPhoto>
-                            <Image src={DevilMan} alt={'aaaa'} />
-                        </ActorPhoto>
-                        <ActorName>{'Actor 0'}</ActorName>
-                    </ActorCard>
-                    <ActorCard>
-                        <ActorPhoto>
-                            <Image src={DevilMan} alt={'aaaa'} />
-                        </ActorPhoto>
-                        <ActorName>{'Actor 1'}</ActorName>
-                    </ActorCard>
-                    <ActorCard>
-                        <ActorPhoto>
-                            <Image src={DevilMan} alt={'aaaa'} />
-                        </ActorPhoto>
-                        <ActorName>{'Actor 2'}</ActorName>
-                    </ActorCard>
-                    <ActorCard>
-                        <ActorPhoto>
-                            <Image src={DevilMan} alt={'aaaa'} />
-                        </ActorPhoto>
-                        <ActorName>{'Actor 3'}</ActorName>
-                    </ActorCard>
+                    {[0, 1, 2, 3].map((actorIndex) => (
+                        <ActorCard key={actorIndex}>
+                            <ActorPhoto>
+                                <Image src={DevilMan} alt={`Actor ${actorIndex}`} />
+                            </ActorPhoto>
+                            <ActorName>{`Actor ${actorIndex}`}</ActorName>
+                        </ActorCard>
+                    ))}
                 </MoreItensIdea>
             </MoviesEdit>
         </>

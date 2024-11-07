@@ -90,7 +90,7 @@ function Movies() {
         ((title && title.toLowerCase().includes(lowerCaseSearch)) ||
           (genre && genre.toLowerCase().includes(lowerCaseSearch)) ||
           (release_year && release_year.toString().includes(lowerCaseSearch)) ||
-          (description && description.toLowerCase().includes(lowerCaseSearch))) 
+          (description && description.toLowerCase().includes(lowerCaseSearch)))
       );
     });
   };
@@ -107,6 +107,14 @@ function Movies() {
   const createNewMovie = () => {
     router.push('/auth/movies/create');
   }
+
+  const isValidUrl = (url: string) => {
+    try {
+      return Boolean(new URL(url));
+    } catch {
+      return false;
+    }
+  };
 
   useEffect(() => {
     fetchMovies();
@@ -155,7 +163,11 @@ function Movies() {
                       .map((movie) => (
                         <MovieContainer key={movie.id}>
                           <MovieCard onClick={() => handleEditMovie(movie)}>
-                            <Image src={movie.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
+                            <Image src={
+                              movie.movies.image && isValidUrl(movie.movies.image)
+                                ? movie.movies.image
+                                : 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'
+                            } alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
                           </MovieCard>
                         </MovieContainer>
                       ))
@@ -189,7 +201,11 @@ function Movies() {
                       .filter((movie) => movie.rating !== null && movie.rating >= 1 && movie.rating <= 5)
                       .map((movie) => (
                         <MovieCard key={movie.id} onClick={() => handleEditMovie(movie)}>
-                          <Image src={movie.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
+                          <Image src={
+                            movie.movies.image && isValidUrl(movie.movies.image)
+                              ? movie.movies.image
+                              : 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'
+                          } alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
                           <Rating>
                             {movie.rating} <FaStar color="#FFD700" />
                           </Rating>
@@ -218,12 +234,17 @@ function Movies() {
               {loading ? (
                 (() => {
                   const filteredMovies = filterPendingMovies(movies, searchTerm);
+
                   return filteredMovies.length > 0 ? (
                     filteredMovies
                       .filter((movie) => movie.rating === null || movie.rating === 0)
                       .map((movie: any) => (
                         <MovieCard key={movie.id} onClick={() => handleEditMovie(movie)}>
-                          <Image src={movie.movies.image || 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'} alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
+                          <Image src={
+                            isValidUrl(movie.movies.image)
+                              ? movie.movies.image
+                              : 'https://coreassociates.org/wp-content/uploads/2013/11/dummy-image-portrait.jpg'
+                          } alt={`Banner do filme ${movie.movies.title}`} width={100} height={100} />
                           <Rating>
                             N/A <FaStar color="#FFD700" />
                           </Rating>
