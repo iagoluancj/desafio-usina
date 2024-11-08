@@ -172,7 +172,10 @@ export default function Login() {
     }
 
 
-    checkTokenValidity();
+    if (typeof window !== 'undefined') {
+      checkTokenValidity();
+    }
+
   }, []);
 
   return (
@@ -189,7 +192,7 @@ export default function Login() {
           </>
         ) : (
           <>
-            <h1>Avalie seus filmes e receba as recomendações perfeitas para seu gosto</h1>
+            <h1>Avalie seus filmes favoritos e receba as recomendações perfeitas para seu gosto.</h1>
             <p>Bora descobrir um filme novo?!</p>
           </>
         )}

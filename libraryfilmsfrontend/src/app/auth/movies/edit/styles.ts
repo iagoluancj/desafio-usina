@@ -268,19 +268,18 @@ export const ButtonCancelled = styled(Button)`
 `;
 
 export const ButtonAddFilmToList = styled.button`
-        background: linear-gradient(135deg, #52B788, #f7f7f7);
         margin-top: 1rem;
         padding: .3rem;
-        color: var(--cardsEComponents);
         font-weight: 500;
         border-radius: 15px;
-        border: 1px solid #fff;
         transition: .2s ease;
+        
+        border: 1px solid var(--buttonPrimario);
+        background: var(--textoPrimario);
+        color: var(--buttonPrimario);
 
         &:hover {
-            border: 1px solid var(--buttonPrimario);
-            background: var(--textoPrimario);
-            color: var(--buttonPrimario);
+
             transform: scale(1.05);
 
             transition: .2s ease-in;

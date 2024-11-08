@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavBar, NavButton, NavLink, NavLinks, NavLogo } from './styles';
 import { LuLogOut } from 'react-icons/lu';
+import { useRouter } from 'next/navigation';
 
 // Simples navbar; 
 
@@ -9,18 +10,19 @@ interface NavbarProps {
 }
 
 const NavbarComponent: React.FC<NavbarProps> = ({ message }) => {
+    const router = useRouter();
+
     const handleLogout = () => {
         localStorage.removeItem('userSession');
-
         localStorage.clear();
 
         document.cookie.split(';').forEach((cookie) => {
             const eqPos = cookie.indexOf('=');
-            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            const name = eqPos > -1 ? cookie.substring(0, eqPos).trim() : cookie.trim();
             document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
         });
 
-        window.location.href = '/login';
+        router.push('/login');
     };
 
     return (

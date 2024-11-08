@@ -10,6 +10,7 @@ export const StyledButton = styled(Button)`
     position: sticky;
     left: 95%;
     bottom: .5rem;
+    width: 90px;
 
     border-radius: 50% 50% 50% 50%;
 

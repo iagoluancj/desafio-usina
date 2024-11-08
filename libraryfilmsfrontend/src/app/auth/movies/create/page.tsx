@@ -164,8 +164,6 @@ function Movies() {
 
     const titleMovies = getTitleMovies(contextMovies)
 
-    console.log(contextMovies)
-
     return (
         <>
             <NavbarComponent message='Adicionar Filmes' />
