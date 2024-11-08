@@ -44,18 +44,19 @@ export const NavButton = styled.button`
     align-items: center;
     justify-content: center;
 
-  padding: 0.2rem .5rem;
-  background: var(--buttonPrimario);
-  border: 2px solid transparent;
-  color: var(--textoPrimario);
-  border-radius: 5px;
-  cursor: pointer;
-  transition: .2s ease-out;
+    padding: 0.2rem .5rem;
+    background: #ff6b6b;
+    border: 2px solid transparent;
+    color: var(--textoPrimario);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .2s ease-out;
   
   &:hover {
-    background: var(--textoPrimario);
-    border: 2px solid var(--buttonPrimario);
-    color: var(--buttonPrimario);
+    background-color: var(--textoPrimario);
+    color: white;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
 
     transform: scale(1.05);
 

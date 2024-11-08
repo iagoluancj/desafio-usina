@@ -3,6 +3,7 @@
 import { supabase } from "@/services/supabase";
 import { TypeMovies, TypeReview, TypeUsers } from "@/Types/types";
 import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from "react";
+import Cookies from 'js-cookie';
 
 type SupaProviderProps = {
     children: ReactNode;
@@ -12,7 +13,8 @@ type SupaContextType = {
     contextUsers: TypeUsers[];
     isRecommended: boolean;
     contextMovies: TypeMovies[];
-    movieEdit: TypeReview | null; 
+    movieEdit: TypeReview | null;
+    updateUserFirstAccess: () => void
     setIsRecommended: Dispatch<SetStateAction<boolean>>;
     setMovieEdit: (movie: TypeReview | null) => void;
 };
@@ -22,8 +24,9 @@ export const SupaContext = createContext<SupaContextType>({
     contextMovies: [],
     isRecommended: false,
     movieEdit: null,
-    setIsRecommended: () => {},
-    setMovieEdit: () => {},
+    updateUserFirstAccess: () => { },
+    setIsRecommended: () => { },
+    setMovieEdit: () => { },
 });
 
 // Context em menor escala, apenas para tratar algumas situações em que se sai melhor do que ao utilizar props.
@@ -32,6 +35,21 @@ const SupaProvider: React.FC<SupaProviderProps> = ({ children }) => {
     const [isRecommended, setIsRecommended] = useState(false)
     const [movies, setMovies] = useState<TypeMovies[]>([]);
     const [movieEdit, setMovieEdit] = useState<TypeReview | null>(null);
+
+    const updateUserFirstAccess = async () => { //Simples atualização no 'first_acess' para controlar o tutorial inicial. 
+        const userId = Cookies.get("user");
+
+        if (userId) {
+            const { error } = await supabase
+                .from("users")
+                .update({ first_access: false })
+                .eq("id", userId);
+
+            if (error) {
+                console.error("Falha ao verificar o primeiro acesso:", error.message);
+            } 
+        }
+    };
 
     useEffect(() => {
         const getAllUsers = async () => {
@@ -63,6 +81,7 @@ const SupaProvider: React.FC<SupaProviderProps> = ({ children }) => {
             setMovies(moviesData || []);
         })();
 
+        // Monitoramento e busca em tempo real dos dados alterados no banco, utilizando no front para obter uma resposta mais rápida e confiavel.
         const usersChannel = supabase
             .channel('users-db-changes')
             .on(
@@ -109,8 +128,9 @@ const SupaProvider: React.FC<SupaProviderProps> = ({ children }) => {
             value={{
                 contextUsers: users,
                 contextMovies: movies,
-                movieEdit, 
+                movieEdit,
                 isRecommended,
+                updateUserFirstAccess,
                 setIsRecommended,
                 setMovieEdit
             }}

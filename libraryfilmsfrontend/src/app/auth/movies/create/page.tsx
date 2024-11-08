@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { SupaContext } from "@/Context/context";
 import Cookies from 'js-cookie';
 import NavbarComponent from "@/components/Navbar";
+import { TypeMovies } from "@/Types/types";
 
 function Movies() {
     const { contextMovies } = useContext(SupaContext);
@@ -110,10 +111,36 @@ function Movies() {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
+
+        if (name === "title") {
+            const selectedMovie = contextMovies.find((movie) => movie.title === value);
+
+            if (selectedMovie) {
+                setFormData({
+                    title: selectedMovie.title,
+                    description: selectedMovie.description,
+                    genre: selectedMovie.genre,
+                    release_year: String(selectedMovie.release_year),
+                    duration: String(selectedMovie.duration),
+                    image: selectedMovie.image || '',
+                });
+            } else {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    [name]: value,
+                    description: "",
+                    genre: "",
+                    release_year: "",
+                    duration: "",
+                    image: "",
+                }));
+            }
+        } else {
+            setFormData((prevData) => ({
+                ...prevData,
+                [name]: value,
+            }));
+        }
     };
 
     const handleNumericInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -130,6 +157,14 @@ function Movies() {
     const createNewMovie = () => {
         router.push('/auth/movies');
     }
+
+    const getTitleMovies = (contextMovies: TypeMovies[]): string[] => {
+        return contextMovies.map(movie => movie.title);
+    };
+
+    const titleMovies = getTitleMovies(contextMovies)
+
+    console.log(contextMovies)
 
     return (
         <>
@@ -149,6 +184,7 @@ function Movies() {
                         maxLength={100}
                         value={formData.title}
                         onChange={handleChange}
+                        suggestions={titleMovies}
                         required
                     />
                     <FormContainer>

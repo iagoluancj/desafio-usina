@@ -106,15 +106,15 @@ export const FormContainer = styled.div`
     transition: transform 1s ease;
 
     ul {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    list-style-type: none; 
-    padding: 1rem; 
-    margin: 0; 
-    background-color: var(--cardsEComponents); 
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        list-style-type: none; 
+        padding: 1rem; 
+        margin: 0; 
+        background-color: var(--cardsEComponents); 
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 li {
@@ -138,6 +138,14 @@ li:last-child {
     border-bottom: none; 
 }
 `
+
+export const HelpPage = styled(FormContainer)`
+        display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`
+
 
 export const FormAnimation = styled(FormContainer)`
 `

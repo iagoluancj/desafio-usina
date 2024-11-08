@@ -55,19 +55,24 @@ export const TopImage = styled.div`
   padding: 0 1rem;
 
   button {
-    background-color: #ff6b6b;
+    background: var(--textoPrimario);
+
+    background-color: var(--buttonPrimario);
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 0.5rem .3rem;
+    padding: 0.2rem .3rem;
     cursor: pointer;
     font-size: 1rem;
+    border: 1px solid var(--buttonPrimario);
     transition: background-color 0.3s;
     box-shadow: 0 4px 8px rgba(0, 0, 0, .5);
     transition: .2s ease;
 
     &:hover {
-      background-color: #ff5252;
+      background-color: var(--textoPrimario);
+      color: var(--buttonPrimario);
+      border: 1px solid var(--buttonPrimario);
       transform: scale(1.05);
       transition: .2s ease;
     }

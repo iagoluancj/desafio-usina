@@ -17,14 +17,17 @@ import { SupaContext } from "@/Context/context";
 import { useRouter } from "next/navigation";
 import NavbarComponent from "@/components/Navbar";
 import MovieCardSkeleton from "@/components/skeleton";
+import Joyride, { CallBackProps } from "react-joyride";
 
 function Movies() {
   const [movies, setMovies] = useState<TypeReview[]>([]);
   const [recommendations, setRecommendations] = useState<TypeReview[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false)
+  const [runTour, setRunTour] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { setMovieEdit, setIsRecommended } = useContext(SupaContext)
+  const first_access = Cookies.get("first_access");
+  const { setMovieEdit, setIsRecommended, updateUserFirstAccess } = useContext(SupaContext)
 
   const router = useRouter();
 
@@ -122,12 +125,92 @@ function Movies() {
     }
   };
 
+
+  const steps = [
+    {
+      target: '.run',
+      content: '',
+    },
+    {
+      target: '.recommendations-header',
+      content: 'Você pode adicionar seus filmes favoritos usando este botão!',
+    },
+    {
+      target: '.add-movie-button',
+      content: 'Após adicionar e avaliar os presentes na lista, irá obter recomendações!',
+    },
+    {
+      target: '.pending-header',
+      content: 'Estas são suas recomendações, adicione novos filmes para receber mais sugestões.',
+    }
+  ];
+
+
   useEffect(() => {
     fetchMovies();
+
+    if (first_access === 'true') {
+      setRunTour(true)
+      Cookies.set("first_access", 'false');
+
+      const timeoutId = setTimeout(() => {
+        updateUserFirstAccess(); 
+      }, 10000);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setRunTour(false)
+    }
+
   }, []);
 
   return (
     <>
+      <Joyride
+        steps={steps}
+        run={runTour}
+        continuous={true}
+        showSkipButton={true}
+        styles={{
+          options: {
+            zIndex: 1000,
+            width: '250px',
+            primaryColor: '#52B788',
+            backgroundColor: '#31373E',
+            textColor: '#fff',
+          },
+          buttonSkip: {
+            backgroundColor: 'transparent',
+            color: '#52B788',
+          },
+          buttonNext: {
+            backgroundColor: '#52B788',
+            color: '#fff',
+          },
+          buttonBack: {
+            color: '#52B788',
+          },
+          tooltip: {
+            border: '2px solid #52B788',
+          },
+          tooltipContent: {
+            color: '#fff',
+          },
+        }}
+        locale={{
+          back: 'Voltar',
+          close: 'Fechar',
+          last: 'Finalizar',
+          next: 'Próximo',
+          skip: 'Pular',
+        }}
+        callback={(data: CallBackProps) => {
+          const { status } = data;
+          if (status === 'finished' || status === 'skipped') {
+            setRunTour(false);
+          }
+        }}
+      />
       <NavbarComponent message='Filmes' />
       <MoviesContainer>
         <HeaderImage>
@@ -150,8 +233,8 @@ function Movies() {
 
         <CardsFilms>
           <div>
-            <h2>Recomendações</h2>
-            <div className="cards-container">
+            <h2 >Recomendações</h2>
+            <div className="cards-container pending-header" >
               {loading ? (
                 (() => {
                   const filteredMovies = filterRecommendedMovies(recommendations, searchTerm);
@@ -236,7 +319,7 @@ function Movies() {
           </div>
           <div>
             <h2>Pendente avaliação</h2>
-            <div className="cards-container">
+            <div className="cards-container add-movie-button">
               {loading ? (
                 (() => {
                   const filteredMovies = filterPendingMovies(movies, searchTerm);
@@ -274,7 +357,7 @@ function Movies() {
             </div>
           </div>
         </CardsFilms>
-        <ButtonCreateMovie onClick={createNewMovie}></ButtonCreateMovie>
+        <ButtonCreateMovie className="recommendations-header" onClick={createNewMovie}></ButtonCreateMovie>
       </MoviesContainer>
     </>
   );

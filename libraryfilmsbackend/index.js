@@ -46,7 +46,7 @@ app.post('/login', async (req, res) => { //Também sem muita complicação, real
     try {
         const { data, error } = await supabase
             .from('users')
-            .select('id, password')
+            .select('id, password, first_access')
             .eq('email', email)
             .single();
 
@@ -56,7 +56,7 @@ app.post('/login', async (req, res) => { //Também sem muita complicação, real
         if (!senhaValida) return res.status(400).json({ message: 'Email ou senha inválidos.' });
 
         const token = gerarToken(data.id);
-        res.json({ token, user: { id: data.id, email: data.email, name: data.name } });
+        res.json({ token, user: { id: data.id, email: data.email, name: data.name, first_access: data.first_access } });
     } catch (error) {
         res.status(500).json({ message: `Erro ao fazer login ${error.message}`, error });
     }

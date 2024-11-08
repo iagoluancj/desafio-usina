@@ -4,14 +4,15 @@
 // Pagina de login robusta e com as devidas validações. 
 
 import InputComponent from "@/components/primitivy/input";
-import { Button, Elipse, FailedLogin, Form, FormAnimation, FormContainer, LoginContainer, LoginHeader, SignInUp } from "./styles";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Button, Elipse, FailedLogin, Form, FormAnimation, FormContainer, HelpPage, LoginContainer, LoginHeader, SignInUp } from "./styles";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
 import photoProfile from '../../assets/fotodeperfil.jpg'
 import Image from "next/image";
+import { SupaContext } from "@/Context/context";
 
 export default function Login() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(true)
@@ -115,6 +116,7 @@ export default function Login() {
       if (response.ok) {
         Cookies.set("token", data.token, { expires: 1, sameSite: 'strict' });
         Cookies.set("user", data.user.id, { expires: 1, sameSite: 'strict' });
+        Cookies.set("first_access", data.user.first_access);
         sessionStorage.setItem('user', JSON.stringify(data.user));
 
         setIsUserLoggedIn(true);
@@ -168,7 +170,7 @@ export default function Login() {
     } else {
       setIsUserLoggedIn(false)
     }
-    
+
 
     checkTokenValidity();
   }, []);
@@ -196,15 +198,17 @@ export default function Login() {
         <FormContainer className={`form-container ${signInUp ? "rotate-positive" : "rotate-negative"}`}>
           {
             failedLogin ? (
-              <div>
-                <ul>
-                  <li><p>{`>`}</p><span> Revise seu email utilizado.</span></li>
-                  <li><p>{`>`}</p> <span>Verifique sua senha de acesso.</span></li>
-                  <li><p>{`>`}</p> <span>Certifique-se de que sua conta está ativada.</span></li>
-                  <li><p>{`>`}</p> <span>Verifique se o Caps Lock está ativado.</span></li>
-                  <li><p>{`>`}</p><span> Tente limpar o cache do navegador.</span></li>
-                </ul>
-              </div>
+              <HelpPage>
+                <div>
+                  <ul>
+                    <li><p>{`>`}</p><span> Revise seu email utilizado.</span></li>
+                    <li><p>{`>`}</p> <span>Verifique sua senha de acesso.</span></li>
+                    <li><p>{`>`}</p> <span>Certifique-se de que sua conta está ativada.</span></li>
+                    <li><p>{`>`}</p> <span>Verifique se o Caps Lock está ativado.</span></li>
+                    <li><p>{`>`}</p><span> Tente limpar o cache do navegador.</span></li>
+                  </ul>
+                </div>
+              </HelpPage>
             ) : (
               signInUp ? (
                 <FormAnimation className={`form-container ${signInUp ? "rotate-positive" : "rotate-negative"}`}>
