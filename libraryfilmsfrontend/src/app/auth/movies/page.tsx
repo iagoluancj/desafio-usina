@@ -141,7 +141,7 @@ function Movies() {
     },
     {
       target: '.pending-header',
-      content: 'Estas são suas recomendações, adicione novos filmes para receber mais sugestões.',
+      content: 'Estas são suas recomendações, adicione e avalie novos filmes para receber mais sugestões.',
     }
   ];
 
