@@ -15,7 +15,13 @@ _Observação: RLS foi aplicado nas tabelas do Supabase para impedir deleções 
 ```bash
 git clone https://github.com/iagoluancj/desafio-usina.git
 cd desafio-usina
+git checkout iagoluan
 ````
+
+or
+
+![image](https://github.com/user-attachments/assets/341a1880-4b38-4e0a-881a-a3e774b733ca)
+
 ### Abra-o, navegue até `libraryfilmsbackend` e execute os comandos abaixo:
 ```bash
 cd libraryfilmsbackend
@@ -25,7 +31,7 @@ yarn dev
 ### Com o backend em execução, navegue até `libraryfilmsfrontend` e execute os comandos abaixo:
 ```bash
 cd ..
-cd libraryfilmbackend
+cd libraryfilmfrontend
 yarn
 yarn dev
 ````
